@@ -1,9 +1,8 @@
 ﻿namespace Catalog.API;
 
 public record CreateProductCommand(string Name, string Description, decimal Price, string ImageFile, List<string> Category): ICommand<CreateProductResult>;
-
 public record CreateProductResult(Guid Id);
-public class CreateProductCommandHandler(IDocumentSession session) : ICommandHandler<CreateProductCommand, CreateProductResult>
+public class CreateProductCommandHandler(IDocumentSession session,ILogger<CreateProductCommandHandler> logger) : ICommandHandler<CreateProductCommand, CreateProductResult>
 {
     public async Task<CreateProductResult> Handle(CreateProductCommand request, CancellationToken cancellationToken)
     {
