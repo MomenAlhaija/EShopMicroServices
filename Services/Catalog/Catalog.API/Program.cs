@@ -1,3 +1,6 @@
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+
 var builder = WebApplication.CreateBuilder(args);
 var assembly = typeof(Program).Assembly;
 
@@ -15,14 +18,16 @@ builder.Services.AddMediatR(config =>
 builder.Services.AddMarten(options =>
 {
     options.Connection(builder.Configuration.GetConnectionString("DataBase")!);
-}).UseLightweightSessions();
+}).UseLightweightSessions().InitializeWith(new CatalogIntialData());
 
 builder.Services.AddValidatorsFromAssembly(assembly);
-builder.Services.AddExceptionHandler<CustomeExceptionHandler>(); // Register the custom exception handler
-
+// Register the custom exception handler
+builder.Services.AddExceptionHandler<CustomeExceptionHandler>(); 
 // Configure Logging
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
+
+builder.Services.AddHealthChecks().AddNpgSql();
 
 var app = builder.Build();
 
@@ -36,5 +41,8 @@ app.UseExceptionHandler(options =>
         var exceptionHandler = context.RequestServices.GetRequiredService<CustomeExceptionHandler>();
     });
 });
-
+app.UseHealthChecks("/health", new HealthCheckOptions
+{
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
 app.Run();
