@@ -1,0 +1,16 @@
+﻿namespace Order.API;
+
+public static class DependencyAPIInjection
+{
+    public static IServiceCollection AddApiServices(this IServiceCollection services, IConfiguration configuration)
+    {
+
+        return services;
+    }
+
+    public static WebApplication UseApiServices(this WebApplication app)
+    {
+
+        return app;
+    }
+}
